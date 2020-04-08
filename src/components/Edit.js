@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import mobiscroll from '@mobiscroll/react-lite';
+import '@mobiscroll/react-lite/dist/css/mobiscroll.min.css';
+
+mobiscroll.settings = {
+    theme: 'ios',
+    themeVariant: 'light'
+}
 
 class Edit extends Component {
 
@@ -30,9 +37,19 @@ class Edit extends Component {
 
     const { isbn, title, author, description, published_year, publisher } = this.state.book;
 
-    axios.put('/api/book/'+this.props.match.params.id, { isbn, title, author, description, published_year, publisher })
-      .then((result) => {
-        this.props.history.push("/show/"+this.props.match.params.id)
+      mobiscroll.confirm({
+          title: 'For your confirmation',
+          message: 'Are you sure, did you realy want to update this changes.',
+          okText: 'Agree',
+          cancelText: 'Disagree',
+          callback: (res) => {
+              mobiscroll.toast({
+                  message: res ? (axios.put('/api/book/'+this.props.match.params.id, { isbn, title, author, description, published_year, publisher })
+                  .then((result) => {
+                    this.props.history.push("/show/"+this.props.match.params.id)
+                  })) : 'Disagreed'
+              });
+          }
       });
   }
 
